@@ -54,7 +54,7 @@ export default function CostingBatchesPage() {
 
   return (
     <DashboardLayout
-      role="accountant"
+      role="accounting"
       breadcrumbs={[{ label: "Tính giá thành" }]}
     >
       <div className="space-y-6">

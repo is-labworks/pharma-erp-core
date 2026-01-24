@@ -40,7 +40,7 @@ export default function CostingReportsPage() {
 
   return (
     <DashboardLayout
-      role="accountant"
+      role="accounting"
       breadcrumbs={[{ label: "Báo cáo giá thành" }]}
     >
       <div className="space-y-6">
