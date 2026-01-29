@@ -63,6 +63,7 @@ import {
   Activity,
   Home,
   FileText,
+  MessageSquare,
 } from "lucide-react";
 import type { UserRole } from "@/lib/types";
 import { roleLabels } from "@/lib/mock-data";
@@ -171,21 +172,6 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
           title: "Báo cáo",
           href: "/procurement-manager/reports",
           icon: BarChart3,
-        },
-      ],
-    },
-  ],
-  qa_qc: [
-    {
-      label: "Kiểm soát chất lượng",
-      items: [
-        { title: "Lô hàng chờ kiểm", href: "/qa-qc/pending", icon: TestTube },
-        { title: "Nhập kết quả", href: "/qa-qc/results", icon: FlaskConical },
-        { title: "Lịch sử kiểm tra", href: "/qa-qc/history", icon: History },
-        {
-          title: "Cảnh báo chất lượng",
-          href: "/qa-qc/alerts",
-          icon: AlertTriangle,
         },
       ],
     },
@@ -440,6 +426,34 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
         { title: "Danh mục vật tư", href: "/admin/materials", icon: Package },
         { title: "Nhật ký hệ thống", href: "/admin/audit-log", icon: Database },
         { title: "Cài đặt", href: "/admin/settings", icon: Cog },
+      ],
+    },
+  ],
+  sales_staff: [
+    {
+      label: "Quản lý Kinh doanh",
+      items: [
+        { title: "Tổng quan", href: "/sales", icon: LayoutDashboard },
+        { title: "Khách hàng", href: "/sales/customers", icon: Users },
+        { title: "Sản phẩm", href: "/sales/products", icon: Package },
+        { title: "Đơn hàng", href: "/sales/orders", icon: ShoppingCart },
+        { title: "Hóa đơn", href: "/sales/invoices", icon: Receipt },
+        { title: "Chăm sóc KH", href: "/sales/feedback", icon: MessageSquare },
+      ],
+    },
+  ],
+  sales_manager: [
+    {
+      label: "Quản lý Kinh doanh",
+      items: [
+        { title: "Tổng quan", href: "/sales", icon: LayoutDashboard },
+        { title: "Khách hàng", href: "/sales/customers", icon: Users },
+        { title: "Sản phẩm", href: "/sales/products", icon: Package },
+        { title: "Đơn hàng", href: "/sales/orders", icon: ShoppingCart },
+        { title: "Phê duyệt", href: "/sales/approval", icon: CheckSquare },
+        { title: "Hóa đơn", href: "/sales/invoices", icon: Receipt },
+        { title: "Chăm sóc KH", href: "/sales/feedback", icon: MessageSquare },
+        { title: "Báo cáo", href: "/sales/reports", icon: BarChart3 },
       ],
     },
   ],

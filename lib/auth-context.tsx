@@ -31,6 +31,8 @@ const roleLinks: Record<UserRole, string> = {
   director: "/director/overview",
   admin: "/admin/users",
   production_planner: "/production/overview",
+  sales_staff: "/sales/orders",
+  sales_manager: "/sales/dashboard",
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

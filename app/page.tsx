@@ -38,6 +38,8 @@ import {
   ArrowRight,
   Loader2,
   Factory,
+  User,
+  UserCog,
 } from "lucide-react";
 
 const roleIcons: Record<UserRole, React.ElementType> = {
@@ -51,6 +53,8 @@ const roleIcons: Record<UserRole, React.ElementType> = {
   director: LayoutDashboard,
   admin: Settings,
   production_planner: Factory,
+  sales_staff: User,
+  sales_manager: UserCog,
 };
 
 const roleDescriptions: Record<UserRole, string> = {
@@ -64,6 +68,8 @@ const roleDescriptions: Record<UserRole, string> = {
   director: "Giám sát tổng quan hoạt động mua sắm",
   admin: "Quản lý người dùng và cấu hình hệ thống",
   production_planner: "Lập kế hoạch sản xuất và phân bổ nguồn lực",
+  sales_staff: "Quản lý đơn hàng và chăm sóc khách hàng",
+  sales_manager: "Giám sát hoạt động kinh doanh và phê duyệt đơn hàng",
 };
 
 export default function HomePage() {

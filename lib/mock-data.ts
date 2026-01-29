@@ -100,6 +100,27 @@ export const users: User[] = [
     role: "production_planner",
     department: "Hoạch định Sản xuất",
   },
+  {
+    id: "user-sales-1",
+    name: "Nguyễn Thị Lan",
+    email: "lan.nguyen@pharma.vn",
+    role: "sales_staff",
+    department: "Kinh doanh",
+  },
+  {
+    id: "user-sales-2",
+    name: "Trần Văn Hùng",
+    email: "hung.tran@pharma.vn",
+    role: "sales_staff",
+    department: "Kinh doanh",
+  },
+  {
+    id: "user-sales-manager",
+    name: "Lê Thị Mai",
+    email: "mai.le@pharma.vn",
+    role: "sales_manager",
+    department: "Kinh doanh",
+  },
 ]
 
 export const materials: Material[] = [
@@ -476,6 +497,8 @@ export const roleLabels: Record<string, string> = {
   director: "Ban Giám đốc",
   admin: "Quản trị hệ thống",
   production_planner: "Hoạch định Sản xuất",
+  sales_staff: "Nhân viên Kinh doanh",
+  sales_manager: "Trưởng bộ phận Kinh doanh",
 }
 
 export const statusLabels: Record<string, string> = {
@@ -505,6 +528,22 @@ export const statusLabels: Record<string, string> = {
   operational: "Hoạt động tốt",
   maintenance: "Bảo trì",
   faulty: "Hỏng hóc",
+  // Sales statuses
+  pending_approval: "Chờ phê duyệt",
+  ready_to_ship: "Sẵn sàng giao",
+  shipped: "Đã xuất kho",
+  delivered: "Đã giao hàng",
+  invoiced: "Đã lập hóa đơn",
+  pharmacy: "Nhà thuốc",
+  hospital: "Bệnh viện",
+  distributor: "Đại lý",
+  good: "Tốt",
+  warning: "Cảnh báo",
+  overdue: "Quá hạn",
+  blocked: "Khóa",
+  cash: "Tiền mặt",
+  transfer: "Chuyển khoản",
+  credit: "Công nợ",
 }
 
 // Production Planning Mock Data

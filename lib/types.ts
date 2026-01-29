@@ -2,6 +2,7 @@
 export * from "./quality-types";
 export * from "./maintenance-types";
 export * from "./costing-types";
+export * from "./sales-types";
 
 
 export type UserRole =
@@ -14,7 +15,9 @@ export type UserRole =
   | "accounting" // Kế toán
   | "director" // Ban Giám đốc
   | "admin" // Quản trị hệ thống
-  | "production_planner"; // Hoạch định Sản xuất
+  | "production_planner" // Hoạch định Sản xuất
+  | "sales_staff" // Nhân viên Kinh doanh
+  | "sales_manager"; // Trưởng bộ phận Kinh doanh
 
 export type RequestStatus =
   | "pending" // Chờ duyệt

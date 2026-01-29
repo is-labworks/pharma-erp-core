@@ -34,6 +34,8 @@ import {
   AlertCircle,
   Shield,
   Factory,
+  User,
+  UserCog,
 } from "lucide-react";
 
 const roleIcons: Record<UserRole, React.ElementType> = {
@@ -47,6 +49,8 @@ const roleIcons: Record<UserRole, React.ElementType> = {
   director: LayoutDashboard,
   admin: Settings,
   production_planner: Factory,
+  sales_staff: User,
+  sales_manager: UserCog,
 };
 
 const roleColors: Record<UserRole, string> = {
@@ -60,6 +64,8 @@ const roleColors: Record<UserRole, string> = {
   director: "bg-rose-500/10 text-rose-600 border-rose-200",
   admin: "bg-slate-500/10 text-slate-600 border-slate-200",
   production_planner: "bg-indigo-500/10 text-indigo-600 border-indigo-200",
+  sales_staff: "bg-teal-500/10 text-teal-600 border-teal-200",
+  sales_manager: "bg-violet-500/10 text-violet-600 border-violet-200",
 };
 
 export default function LoginPage() {
