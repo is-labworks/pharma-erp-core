@@ -25,8 +25,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, role, breadcrumbs = [] }: DashboardLayoutProps) {
   const router = useRouter()
-  const { user, isAuthenticated, switchRole, logout } = useAuth()
-  const [currentRole, setCurrentRole] = React.useState<UserRole>(role)
+  const { user, isAuthenticated, logout } = useAuth()
 
   React.useEffect(() => {
     if (!isAuthenticated) {
@@ -34,31 +33,22 @@ export function DashboardLayout({ children, role, breadcrumbs = [] }: DashboardL
     }
   }, [isAuthenticated, router])
 
-  React.useEffect(() => {
-    if (user) {
-      setCurrentRole(user.role)
-    }
-  }, [user])
-
-  const handleRoleChange = (newRole: UserRole) => {
-    setCurrentRole(newRole)
-    switchRole(newRole)
-  }
-
   if (!isAuthenticated || !user) {
     return null
   }
 
+  // Use the actual logged-in user's role (not the page's default role prop)
+  const activeRole = user.role
+
   return (
     <SidebarProvider>
       <AppSidebar
-        role={currentRole}
+        role={activeRole}
         user={{
           name: user.name,
           email: user.email,
           avatar: user.avatar,
         }}
-        onRoleChange={handleRoleChange}
         onLogout={logout}
       />
       <SidebarInset>
@@ -67,12 +57,9 @@ export function DashboardLayout({ children, role, breadcrumbs = [] }: DashboardL
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
-              </BreadcrumbItem>
               {breadcrumbs.map((crumb, index) => (
                 <React.Fragment key={crumb.label}>
-                  <BreadcrumbSeparator />
+                  {index > 0 && <BreadcrumbSeparator />}
                   <BreadcrumbItem>
                     {index === breadcrumbs.length - 1 ? (
                       <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
@@ -84,7 +71,9 @@ export function DashboardLayout({ children, role, breadcrumbs = [] }: DashboardL
               ))}
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="ml-auto text-sm text-muted-foreground">{roleLabels[currentRole]}</div>
+          <div className="ml-auto text-sm text-muted-foreground">
+            {roleLabels[activeRole]}
+          </div>
         </header>
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>

@@ -33,24 +33,24 @@ export default function AdminMaterialsPage() {
   )
 
   const columns = [
-    { key: "code", label: "Mã vật tư", sortable: true },
-    { key: "name", label: "Tên vật tư", sortable: true },
-    { key: "category", label: "Danh mục", sortable: true },
-    { key: "unit", label: "Đơn vị" },
-    { key: "minStock", label: "Tồn tối thiểu", sortable: true },
-    { key: "currentStock", label: "Tồn hiện tại", sortable: true },
+    { key: "code", header: "Mã vật tư", cell: (item: typeof materials[0]) => item.code },
+    { key: "name", header: "Tên vật tư", cell: (item: typeof materials[0]) => item.name },
+    { key: "category", header: "Danh mục", cell: (item: typeof materials[0]) => item.category },
+    { key: "unit", header: "Đơn vị", cell: (item: typeof materials[0]) => item.unit },
+    { key: "minStock", header: "Tồn tối thiểu", cell: (item: typeof materials[0]) => item.minStock },
+    { key: "currentStock", header: "Tồn hiện tại", cell: (item: typeof materials[0]) => item.currentStock },
     {
       key: "status",
-      label: "Trạng thái",
-      render: (_: unknown, row: (typeof materials)[0]) => {
-        const isLow = row.currentStock < row.minStock
-        return <StatusBadge status={isLow ? "rejected" : "completed"}>{isLow ? "Cần bổ sung" : "Đủ hàng"}</StatusBadge>
+      header: "Trạng thái",
+      cell: (item: typeof materials[0]) => {
+        const isLow = item.currentStock < item.minStock
+        return <StatusBadge status={isLow ? "failed" : "completed"} />
       },
     },
     {
       key: "actions",
-      label: "Thao tác",
-      render: () => (
+      header: "Thao tác",
+      cell: (item: typeof materials[0]) => (
         <Button variant="ghost" size="sm">
           <Edit className="h-4 w-4" />
         </Button>
@@ -67,76 +67,74 @@ export default function AdminMaterialsPage() {
         <PageHeader
           title="Danh mục vật tư"
           description="Quản lý danh mục nguyên liệu, tá dược và bao bì"
-          icon={Package}
-          actions={
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Thêm vật tư
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Thêm vật tư mới</DialogTitle>
-                  <DialogDescription>Nhập thông tin vật tư cần quản lý</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Mã vật tư</Label>
-                      <Input placeholder="VD: NL-007" />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Danh mục</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn danh mục" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="nguyen-lieu">Nguyên liệu</SelectItem>
-                          <SelectItem value="ta-duoc">Tá dược</SelectItem>
-                          <SelectItem value="bao-bi">Bao bì</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+        >
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Thêm vật tư
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Thêm vật tư mới</DialogTitle>
+                <DialogDescription>Nhập thông tin vật tư cần quản lý</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Mã vật tư</Label>
+                    <Input placeholder="VD: NL-007" />
                   </div>
                   <div className="grid gap-2">
-                    <Label>Tên vật tư</Label>
-                    <Input placeholder="Tên đầy đủ của vật tư" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label>Đơn vị tính</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn đơn vị" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="kg">kg</SelectItem>
-                          <SelectItem value="g">g</SelectItem>
-                          <SelectItem value="cai">cái</SelectItem>
-                          <SelectItem value="cuon">cuộn</SelectItem>
-                          <SelectItem value="hop">hộp</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Tồn tối thiểu</Label>
-                      <Input type="number" placeholder="0" />
-                    </div>
+                    <Label>Danh mục</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn danh mục" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nguyen-lieu">Nguyên liệu</SelectItem>
+                        <SelectItem value="ta-duoc">Tá dược</SelectItem>
+                        <SelectItem value="bao-bi">Bao bì</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Hủy
-                  </Button>
-                  <Button onClick={() => setIsDialogOpen(false)}>Thêm vật tư</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          }
-        />
+                <div className="grid gap-2">
+                  <Label>Tên vật tư</Label>
+                  <Input placeholder="Tên đầy đủ của vật tư" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Đơn vị tính</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn đơn vị" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="kg">kg</SelectItem>
+                        <SelectItem value="g">g</SelectItem>
+                        <SelectItem value="cai">cái</SelectItem>
+                        <SelectItem value="cuon">cuộn</SelectItem>
+                        <SelectItem value="hop">hộp</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Tồn tối thiểu</Label>
+                    <Input type="number" placeholder="0" />
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Hủy
+                </Button>
+                <Button onClick={() => setIsDialogOpen(false)}>Thêm vật tư</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </PageHeader>
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card>

@@ -109,20 +109,20 @@ export default function AuditLogPage() {
   })
 
   const columns = [
-    { key: "timestamp", label: "Thời gian", sortable: true },
-    { key: "user", label: "Người dùng", sortable: true },
+    { key: "timestamp", header: "Thời gian", cell: (item: typeof auditLogs[0]) => item.timestamp },
+    { key: "user", header: "Người dùng", cell: (item: typeof auditLogs[0]) => item.user },
     {
       key: "action",
-      label: "Hành động",
-      render: (value: string) => (
-        <Badge variant="outline" className={actionColors[value] || ""}>
-          {value}
+      header: "Hành động",
+      cell: (item: typeof auditLogs[0]) => (
+        <Badge variant="outline" className={actionColors[item.action] || ""}>
+          {item.action}
         </Badge>
       ),
     },
-    { key: "module", label: "Module", sortable: true },
-    { key: "details", label: "Chi tiết" },
-    { key: "ipAddress", label: "IP Address" },
+    { key: "module", header: "Module", cell: (item: typeof auditLogs[0]) => item.module },
+    { key: "details", header: "Chi tiết", cell: (item: typeof auditLogs[0]) => item.details },
+    { key: "ipAddress", header: "IP Address", cell: (item: typeof auditLogs[0]) => item.ipAddress },
   ]
 
   return (
@@ -131,14 +131,12 @@ export default function AuditLogPage() {
         <PageHeader
           title="Nhật ký hệ thống"
           description="Theo dõi tất cả hoạt động trong hệ thống"
-          icon={Database}
-          actions={
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Xuất log
-            </Button>
-          }
-        />
+        >
+          <Button variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Xuất log
+          </Button>
+        </PageHeader>
 
         <Card>
           <CardHeader>

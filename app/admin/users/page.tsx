@@ -44,36 +44,43 @@ export default function AdminUsersPage() {
   const columns = [
     {
       key: "name",
-      label: "Họ tên",
-      sortable: true,
-      render: (value: string, row: (typeof extendedUsers)[0]) => (
+      header: "Họ tên",
+      searchable: true,
+      cell: (item: (typeof extendedUsers)[0]) => (
         <div>
-          <p className="font-medium">{value}</p>
-          <p className="text-xs text-muted-foreground">{row.email}</p>
+          <p className="font-medium">{item.name}</p>
+          <p className="text-xs text-muted-foreground">{item.email}</p>
         </div>
       ),
     },
-    { key: "department", label: "Phòng ban", sortable: true },
+    { 
+      key: "department", 
+      header: "Phòng ban", 
+      searchable: true,
+      cell: (item: (typeof extendedUsers)[0]) => item.department 
+    },
     {
       key: "role",
-      label: "Vai trò",
-      sortable: true,
-      render: (value: UserRole) => <Badge variant="outline">{roleLabels[value]}</Badge>,
+      header: "Vai trò",
+      searchable: true,
+      cell: (item: (typeof extendedUsers)[0]) => <Badge variant="outline">{roleLabels[item.role]}</Badge>,
     },
     {
       key: "status",
-      label: "Trạng thái",
-      render: (value: string) => (
-        <StatusBadge status={value === "active" ? "completed" : "rejected"}>
-          {value === "active" ? "Hoạt động" : "Khóa"}
-        </StatusBadge>
+      header: "Trạng thái",
+      cell: (item: (typeof extendedUsers)[0]) => (
+        <StatusBadge status={item.status === "active" ? "active" : "inactive"} />
       ),
     },
-    { key: "lastLogin", label: "Đăng nhập cuối" },
+    { 
+      key: "lastLogin", 
+      header: "Đăng nhập cuối",
+      cell: (item: (typeof extendedUsers)[0]) => item.lastLogin
+    },
     {
       key: "actions",
-      label: "Thao tác",
-      render: () => (
+      header: "Thao tác",
+      cell: (item: (typeof extendedUsers)[0]) => (
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm">
             <Edit className="h-4 w-4" />
@@ -94,71 +101,69 @@ export default function AdminUsersPage() {
         <PageHeader
           title="Quản lý người dùng"
           description="Quản lý tài khoản và phân quyền người dùng trong hệ thống"
-          icon={Users}
-          actions={
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Thêm người dùng
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Thêm người dùng mới</DialogTitle>
-                  <DialogDescription>Nhập thông tin người dùng và phân quyền</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label>Họ và tên</Label>
-                    <Input placeholder="Nguyễn Văn A" />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Email</Label>
-                    <Input type="email" placeholder="email@pharma.vn" />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Phòng ban</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn phòng ban" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sanxuat">Sản xuất</SelectItem>
-                        <SelectItem value="muahang">Mua hàng</SelectItem>
-                        <SelectItem value="qaqc">QA/QC</SelectItem>
-                        <SelectItem value="kho">Kho</SelectItem>
-                        <SelectItem value="ketoan">Kế toán</SelectItem>
-                        <SelectItem value="it">IT</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Vai trò</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn vai trò" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(Object.keys(roleLabels) as UserRole[]).map((role) => (
-                          <SelectItem key={role} value={role}>
-                            {roleLabels[role]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+        >
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Thêm người dùng
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Thêm người dùng mới</DialogTitle>
+                <DialogDescription>Nhập thông tin người dùng và phân quyền</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label>Họ và tên</Label>
+                  <Input placeholder="Nguyễn Văn A" />
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Hủy
-                  </Button>
-                  <Button onClick={() => setIsDialogOpen(false)}>Tạo người dùng</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          }
-        />
+                <div className="grid gap-2">
+                  <Label>Email</Label>
+                  <Input type="email" placeholder="email@pharma.vn" />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Phòng ban</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn phòng ban" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sanxuat">Sản xuất</SelectItem>
+                      <SelectItem value="muahang">Mua hàng</SelectItem>
+                      <SelectItem value="qaqc">QA/QC</SelectItem>
+                      <SelectItem value="kho">Kho</SelectItem>
+                      <SelectItem value="ketoan">Kế toán</SelectItem>
+                      <SelectItem value="it">IT</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Vai trò</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn vai trò" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(roleLabels) as UserRole[]).map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {roleLabels[role]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Hủy
+                </Button>
+                <Button onClick={() => setIsDialogOpen(false)}>Tạo người dùng</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </PageHeader>
 
         <div className="grid gap-4 md:grid-cols-3">
           <Card>

@@ -2,105 +2,66 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useAuth, roleLinks } from "@/lib/auth-context";
-import type { UserRole } from "@/lib/types";
-import { users, roleLabels } from "@/lib/mock-data";
+import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { roleLinks } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Pill,
-  LogIn,
-  Users,
-  FilePlus,
-  CheckSquare,
-  Building2,
-  TestTube,
-  Warehouse,
-  Receipt,
-  LayoutDashboard,
-  Settings,
-  AlertCircle,
-  Shield,
-  Factory,
-  User,
-  UserCog,
-} from "lucide-react";
-
-const roleIcons: Record<UserRole, React.ElementType> = {
-  requester: FilePlus,
-  department_head: CheckSquare,
-  procurement: Building2,
-  procurement_manager: LayoutDashboard,
-  qa_qc: TestTube,
-  warehouse: Warehouse,
-  accounting: Receipt,
-  director: LayoutDashboard,
-  admin: Settings,
-  production_planner: Factory,
-  sales_staff: User,
-  sales_manager: UserCog,
-};
-
-const roleColors: Record<UserRole, string> = {
-  requester: "bg-blue-500/10 text-blue-600 border-blue-200",
-  department_head: "bg-purple-500/10 text-purple-600 border-purple-200",
-  procurement: "bg-green-500/10 text-green-600 border-green-200",
-  procurement_manager: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
-  qa_qc: "bg-orange-500/10 text-orange-600 border-orange-200",
-  warehouse: "bg-amber-500/10 text-amber-600 border-amber-200",
-  accounting: "bg-cyan-500/10 text-cyan-600 border-cyan-200",
-  director: "bg-rose-500/10 text-rose-600 border-rose-200",
-  admin: "bg-slate-500/10 text-slate-600 border-slate-200",
-  production_planner: "bg-indigo-500/10 text-indigo-600 border-indigo-200",
-  sales_staff: "bg-teal-500/10 text-teal-600 border-teal-200",
-  sales_manager: "bg-violet-500/10 text-violet-600 border-violet-200",
-};
+import { Badge } from "@/components/ui/badge";
+import { Pill, LogIn, Shield, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-  const { login, loginAsRole, isAuthenticated, user } = useAuth();
+  const { login, isAuthenticated, user, isLoading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState("");
 
   // Redirect if already authenticated
   React.useEffect(() => {
-    if (isAuthenticated && user) {
+    if (!isLoading && isAuthenticated && user) {
       router.push(roleLinks[user.role]);
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true);
 
-    const result = await login(email, password);
+    if (!email.trim()) {
+      setError("Vui lòng nhập email");
+      return;
+    }
+    if (!password) {
+      setError("Vui lòng nhập mật khẩu");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const result = await login(email.trim(), password);
     if (!result.success && result.error) {
       setError(result.error);
     }
-    setIsLoading(false);
+    setIsSubmitting(false);
   };
 
-  const handleQuickLogin = (role: UserRole) => {
-    loginAsRole(role);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
@@ -109,10 +70,8 @@ export default function LoginPage() {
               <Pill className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold">PharmaPro</h1>
-              <p className="text-xs text-muted-foreground">
-                Hệ thống Quản lý Mua hàng
-              </p>
+              <h1 className="text-lg font-semibold">PharmaPro ERP</h1>
+              <p className="text-xs text-muted-foreground">Hệ thống Quản lý Dược phẩm</p>
             </div>
           </div>
           <Badge variant="outline" className="gap-1.5">
@@ -122,150 +81,123 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="mx-auto max-w-6xl px-4 py-12">
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Đăng nhập hệ thống
-          </h2>
-          <p className="mt-2 text-muted-foreground">
-            Chọn phương thức đăng nhập hoặc đăng nhập nhanh theo vai trò
-          </p>
-        </div>
-
-        <Tabs defaultValue="quick" className="mx-auto max-w-4xl">
-          <TabsList className="mx-auto mb-8 grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="quick" className="gap-2">
-              <Users className="h-4 w-4" />
-              Đăng nhập nhanh
-            </TabsTrigger>
-            <TabsTrigger value="credentials" className="gap-2">
-              <LogIn className="h-4 w-4" />
-              Email & Mật khẩu
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Quick Login Tab */}
-          <TabsContent value="quick">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {users.map((u) => {
-                const Icon = roleIcons[u.role];
-                return (
-                  <Card
-                    key={u.id}
-                    className="group cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-primary/20"
-                    onClick={() => handleQuickLogin(u.role)}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <Avatar className="h-12 w-12 ring-2 ring-background">
-                          <AvatarImage
-                            src={
-                              u.avatar || "/placeholder.svg?height=48&width=48"
-                            }
-                          />
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {u.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <Badge variant="outline" className={roleColors[u.role]}>
-                          <Icon className="mr-1 h-3 w-3" />
-                          {roleLabels[u.role]}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardTitle className="text-base">{u.name}</CardTitle>
-                      <CardDescription className="mt-1">
-                        {u.email}
-                      </CardDescription>
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        Bộ phận: {u.department}
-                      </p>
-                      <Button
-                        variant="secondary"
-                        className="mt-4 w-full opacity-0 transition-opacity group-hover:opacity-100"
-                      >
-                        Đăng nhập
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+      {/* Main */}
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+              <LogIn className="h-8 w-8 text-primary" />
             </div>
-          </TabsContent>
+            <h2 className="text-2xl font-bold tracking-tight">Đăng nhập</h2>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              Nhập email và mật khẩu của bạn để truy cập hệ thống
+            </p>
+          </div>
 
-          {/* Credentials Login Tab */}
-          <TabsContent value="credentials">
-            <Card className="mx-auto max-w-md">
-              <CardHeader className="text-center">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                  <LogIn className="h-7 w-7 text-primary" />
+          <Card className="shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Thông tin tài khoản</CardTitle>
+              <CardDescription>
+                Sử dụng email đã được cấp hoặc đăng ký
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="example@pharma.vn"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    disabled={isSubmitting}
+                    required
+                  />
                 </div>
-                <CardTitle>Đăng nhập bằng tài khoản</CardTitle>
-                <CardDescription>
-                  Nhập email và mật khẩu được cấp bởi quản trị viên
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {error && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="example@pharma.vn"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Mật khẩu <span className="text-red-500">*</span></Label>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Mật khẩu</Label>
+                  <div className="relative">
                     <Input
                       id="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      disabled={isSubmitting}
                       required
+                      className="pr-10"
                     />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
-                  </Button>
-                </form>
-
-                <div className="mt-6 border-t pt-4">
-                  <p className="text-center text-sm text-muted-foreground">
-                    Demo: Sử dụng email từ danh sách nhân viên
-                  </p>
-                  <p className="mt-1 text-center text-xs text-muted-foreground">
-                    Mật khẩu: bất kỳ (tối thiểu 4 ký tự)
-                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+
+                <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Đang đăng nhập...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="h-4 w-4" />
+                      Đăng nhập
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-3 border-t pt-5">
+              <p className="text-sm text-center text-muted-foreground">
+                Chưa có tài khoản?{" "}
+                <Link href="/register" className="text-primary font-medium hover:underline">
+                  Đăng ký ngay
+                </Link>
+              </p>
+              <div className="w-full rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+                <p className="font-medium mb-2 text-foreground">Tài khoản demo (Mật khẩu: bất kỳ ≥6 ký tự):</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-1.5 h-48 overflow-y-auto pr-1">
+                  <div className="flex flex-col"><span className="font-medium">Người yêu cầu / SX</span><span>an.nguyen@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Trưởng bộ phận</span><span>binh.tran@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Nhân viên Mua hàng</span><span>cuong.le@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Trưởng phòng Mua hàng</span><span>dung.pham@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">QA / QC</span><span>em.hoang@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Thủ kho (GSP/GDP)</span><span>phuong.vu@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Kế toán</span><span>giang.dang@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Ban Giám đốc</span><span>huong.ngo@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Quản trị Hệ thống (IT)</span><span>inh.bui@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Kế hoạch Sản xuất</span><span>kim.vo@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Nhân viên Kinh doanh</span><span>lan.nguyen@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Trưởng phòng KD</span><span>mai.le@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Trưởng phòng Nhân sự</span><span>nhung.nguyen@pharma.vn</span></div>
+                  <div className="flex flex-col"><span className="font-medium">Nhân viên Nhân sự</span><span>khoa.vo@pharma.vn</span></div>
+                </div>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t bg-white/80 py-6 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            © 2026 PharmaPro - Công ty Dược phẩm. Tuân thủ tiêu chuẩn GMP.
-          </p>
-        </div>
+      <footer className="border-t bg-white/60 py-4 text-center text-xs text-muted-foreground">
+        © 2026 PharmaPro – Tuân thủ tiêu chuẩn GMP/GDP/GSP
       </footer>
     </div>
   );

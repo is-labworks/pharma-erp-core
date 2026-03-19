@@ -121,6 +121,20 @@ export const users: User[] = [
     role: "sales_manager",
     department: "Kinh doanh",
   },
+  {
+    id: "user-hr-mgr",
+    name: "Nguyễn Thị Hồng Nhung",
+    email: "nhung.nguyen@pharma.vn",
+    role: "hr_manager",
+    department: "Hành chính - Nhân sự",
+  },
+  {
+    id: "user-hr-staff",
+    name: "Võ Minh Khoa",
+    email: "khoa.vo@pharma.vn",
+    role: "hr_staff",
+    department: "Hành chính - Nhân sự",
+  },
 ]
 
 export const materials: Material[] = [
@@ -499,6 +513,8 @@ export const roleLabels: Record<string, string> = {
   production_planner: "Hoạch định Sản xuất",
   sales_staff: "Nhân viên Kinh doanh",
   sales_manager: "Trưởng bộ phận Kinh doanh",
+  hr_manager: "Quản lý Nhân sự",
+  hr_staff: "Nhân viên Nhân sự",
 }
 
 export const statusLabels: Record<string, string> = {

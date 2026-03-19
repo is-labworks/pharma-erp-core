@@ -9,22 +9,24 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (
+    name: string,
     email: string,
     password: string,
+    role: UserRole,
+    department: string
   ) => Promise<{ success: boolean; error?: string }>;
-  loginAsRole: (role: UserRole) => void;
   logout: () => void;
-  switchRole: (role: UserRole) => void;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-const roleLinks: Record<UserRole, string> = {
+export const roleLinks: Record<UserRole, string> = {
   requester: "/requester/list",
   department_head: "/department-head/pending",
   procurement: "/procurement/approved-requests",
-  procurement_manager: "/procurement/orders", // Fixed missing route - use existing procurement orders page
+  procurement_manager: "/procurement/orders",
   qa_qc: "/qa-qc/pending",
   warehouse: "/warehouse/inventory",
   accounting: "/accounting/completed-pos",
@@ -33,7 +35,12 @@ const roleLinks: Record<UserRole, string> = {
   production_planner: "/production/overview",
   sales_staff: "/sales/orders",
   sales_manager: "/sales/dashboard",
+  hr_manager: "/hr",
+  hr_staff: "/hr/candidates",
 };
+
+// In-memory store for registered users (extends mock data at runtime)
+let registeredUsers: User[] = [];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null);
@@ -53,47 +60,87 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("pharma_user");
       }
     }
+    // Load any registered users from localStorage
+    const storedRegistered = localStorage.getItem("pharma_registered_users");
+    if (storedRegistered) {
+      try {
+        registeredUsers = JSON.parse(storedRegistered);
+      } catch {}
+    }
     setIsLoading(false);
   }, []);
 
+  const getAllUsers = () => [...users, ...registeredUsers];
+
   const login = async (
     email: string,
-    password: string,
+    password: string
   ): Promise<{ success: boolean; error?: string }> => {
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Find user by email (mock validation)
-    const foundUser = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase(),
+    const foundUser = getAllUsers().find(
+      (u) => u.email.toLowerCase() === email.toLowerCase()
     );
 
     if (!foundUser) {
       return { success: false, error: "Email không tồn tại trong hệ thống" };
     }
 
-    // Mock password check (in real app, this would be server-side)
-    if (password.length < 4) {
+    if (password.length < 6) {
+      return { success: false, error: "Mật khẩu phải có ít nhất 6 ký tự" };
+    }
+
+    // For registered users, check stored password hash
+    const registeredUser = registeredUsers.find(
+      (u) => u.email.toLowerCase() === email.toLowerCase()
+    );
+    if (registeredUser && (registeredUser as any).passwordHash !== password) {
       return { success: false, error: "Mật khẩu không đúng" };
     }
 
     setUser(foundUser);
     setIsAuthenticated(true);
     localStorage.setItem("pharma_user", JSON.stringify(foundUser));
-
-    // Redirect to role-specific page
     router.push(roleLinks[foundUser.role]);
     return { success: true };
   };
 
-  const loginAsRole = (role: UserRole) => {
-    const foundUser = users.find((u) => u.role === role);
-    if (foundUser) {
-      setUser(foundUser);
-      setIsAuthenticated(true);
-      localStorage.setItem("pharma_user", JSON.stringify(foundUser));
-      router.push(roleLinks[role]);
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    role: UserRole,
+    department: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    const allUsers = getAllUsers();
+    if (allUsers.find((u) => u.email.toLowerCase() === email.toLowerCase())) {
+      return { success: false, error: "Email này đã được đăng ký" };
     }
+
+    if (password.length < 6) {
+      return { success: false, error: "Mật khẩu phải có ít nhất 6 ký tự" };
+    }
+
+    const newUser: User & { passwordHash?: string } = {
+      id: `user-reg-${Date.now()}`,
+      name,
+      email,
+      role,
+      department,
+      passwordHash: password, // In production, hash this server-side
+    };
+
+    registeredUsers = [...registeredUsers, newUser];
+    localStorage.setItem("pharma_registered_users", JSON.stringify(registeredUsers));
+
+    // Auto-login after registration
+    setUser(newUser);
+    setIsAuthenticated(true);
+    localStorage.setItem("pharma_user", JSON.stringify(newUser));
+    router.push(roleLinks[role]);
+    return { success: true };
   };
 
   const logout = () => {
@@ -103,14 +150,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
-  const switchRole = (newRole: UserRole) => {
-    const foundUser = users.find((u) => u.role === newRole);
-    if (foundUser) {
-      setUser(foundUser);
-      localStorage.setItem("pharma_user", JSON.stringify(foundUser));
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -118,9 +157,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated,
         isLoading,
         login,
-        loginAsRole,
+        register,
         logout,
-        switchRole,
       }}
     >
       {children}
@@ -135,5 +173,3 @@ export function useAuth() {
   }
   return context;
 }
-
-export { roleLinks };

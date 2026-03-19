@@ -135,7 +135,7 @@ export default function BatchRecordsPage() {
                   <div>
                     <Label className="text-muted-foreground">Số lượng</Label>
                     <p className="font-medium">
-                      {selectedBatch.initialQuantity.toLocaleString()}{" "}
+                      {selectedBatch.originalQuantity.toLocaleString()}{" "}
                       {selectedBatch.unit}
                     </p>
                   </div>
@@ -145,7 +145,7 @@ export default function BatchRecordsPage() {
                     </Label>
                     <p className="font-medium">
                       {new Date(
-                        selectedBatch.manufactureDate,
+                        selectedBatch.manufacturingDate,
                       ).toLocaleDateString("vi-VN")}
                     </p>
                   </div>
@@ -167,15 +167,15 @@ export default function BatchRecordsPage() {
                     </Label>
                     <Badge
                       variant={
-                        selectedBatch.qualityStatus === "released"
+                        selectedBatch.qualityStatus === "approved"
                           ? "default"
                           : "secondary"
                       }
                     >
-                      {selectedBatch.qualityStatus === "released"
+                      {selectedBatch.qualityStatus === "approved"
                         ? "Đã phê duyệt"
-                        : selectedBatch.qualityStatus === "quarantine"
-                          ? "Cách ly"
+                        : selectedBatch.qualityStatus === "rejected"
+                          ? "Từ chối"
                           : "Đang kiểm"}
                     </Badge>
                   </div>
@@ -192,9 +192,11 @@ export default function BatchRecordsPage() {
                     >
                       {selectedBatch.status === "available"
                         ? "Sẵn sàng"
-                        : selectedBatch.status === "allocated"
+                        : selectedBatch.status === "reserved"
                           ? "Đã phân bổ"
-                          : "Đã dùng hết"}
+                          : selectedBatch.status === "consumed"
+                            ? "Đã dùng hết"
+                            : "Khác"}
                     </Badge>
                   </div>
                 </div>

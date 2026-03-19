@@ -64,6 +64,10 @@ import {
   Home,
   FileText,
   MessageSquare,
+  UserPlus,
+  UserCheck,
+  CalendarDays,
+  HandshakeIcon,
 } from "lucide-react";
 import type { UserRole } from "@/lib/types";
 import { roleLabels } from "@/lib/mock-data";
@@ -149,29 +153,25 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
       label: "Quản lý mua hàng",
       items: [
         {
-          title: "Phê duyệt NCC",
-          href: "/procurement-manager/supplier-approval",
-          icon: Building2,
-        },
-        {
-          title: "Phê duyệt PO",
-          href: "/procurement-manager/po-approval",
+          title: "Nhu cầu đã duyệt",
+          href: "/procurement/approved-requests",
           icon: FileCheck,
         },
         {
-          title: "Dashboard ngân sách",
-          href: "/procurement-manager/budget",
-          icon: Wallet,
+          title: "Nhà cung cấp",
+          href: "/procurement/suppliers",
+          icon: Building2,
         },
         {
-          title: "Kế hoạch mua sắm",
-          href: "/procurement-manager/planning",
-          icon: ListTodo,
+          title: "Yêu cầu báo giá (RFQ)",
+          href: "/procurement/rfq",
+          icon: Send,
         },
+        { title: "So sánh báo giá", href: "/procurement/compare", icon: Scale },
         {
-          title: "Báo cáo",
-          href: "/procurement-manager/reports",
-          icon: BarChart3,
+          title: "Đơn mua hàng (PO)",
+          href: "/procurement/orders",
+          icon: ShoppingCart,
         },
       ],
     },
@@ -457,6 +457,66 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
       ],
     },
   ],
+  hr_manager: [
+    {
+      label: "Kế hoạch Nhân lực",
+      items: [
+        { title: "Tổng quan HR", href: "/hr", icon: LayoutDashboard },
+        { title: "Kế hoạch nhân lực", href: "/hr/planning", icon: ListTodo },
+        { title: "Tạo kế hoạch", href: "/hr/planning/create", icon: FilePlus },
+      ],
+    },
+    {
+      label: "Tuyển dụng",
+      items: [
+        { title: "Yêu cầu tuyển", href: "/hr/recruitment", icon: FileCheck },
+        { title: "Tạo yêu cầu", href: "/hr/recruitment/create", icon: FilePlus },
+      ],
+    },
+    {
+      label: "Ứng viên & Phỏng vấn",
+      items: [
+        { title: "Pipeline Ứng viên", href: "/hr/candidates", icon: Users },
+        { title: "Lịch phỏng vấn", href: "/hr/interviews", icon: CalendarDays },
+      ],
+    },
+    {
+      label: "Offer & Hợp đồng",
+      items: [
+        { title: "Quản lý Offer", href: "/hr/offers", icon: UserCheck },
+        { title: "Hợp đồng thử việc", href: "/hr/contracts", icon: FileText },
+      ],
+    },
+    {
+      label: "Báo cáo",
+      items: [
+        { title: "Báo cáo tuyển dụng", href: "/hr/reports", icon: BarChart3 },
+      ],
+    },
+  ],
+  hr_staff: [
+    {
+      label: "Tuyển dụng",
+      items: [
+        { title: "Tổng quan HR", href: "/hr", icon: LayoutDashboard },
+        { title: "Yêu cầu tuyển", href: "/hr/recruitment", icon: FileCheck },
+      ],
+    },
+    {
+      label: "Ứng viên & Phỏng vấn",
+      items: [
+        { title: "Pipeline Ứng viên", href: "/hr/candidates", icon: Users },
+        { title: "Lịch phỏng vấn", href: "/hr/interviews", icon: CalendarDays },
+      ],
+    },
+    {
+      label: "Offer & Hợp đồng",
+      items: [
+        { title: "Quản lý Offer", href: "/hr/offers", icon: UserCheck },
+        { title: "Hợp đồng thử việc", href: "/hr/contracts", icon: FileText },
+      ],
+    },
+  ],
 };
 
 interface AppSidebarProps {
@@ -466,14 +526,12 @@ interface AppSidebarProps {
     email: string;
     avatar?: string;
   };
-  onRoleChange: (role: UserRole) => void;
   onLogout?: () => void;
 }
 
 export function AppSidebar({
   role,
   user,
-  onRoleChange,
   onLogout,
 }: AppSidebarProps) {
   const pathname = usePathname();
@@ -489,28 +547,13 @@ export function AppSidebar({
           <div className="flex flex-col">
             <span className="text-lg font-bold">PharmaPro</span>
             <span className="text-xs text-sidebar-foreground/70">
-              Quản lý Mua hàng
+              ERP Quản lý Dược phẩm
             </span>
           </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/"}>
-                  <Link href="/">
-                    <Home className="h-4 w-4" />
-                    <span>Trang chủ</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
         {navGroups.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
@@ -536,60 +579,30 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="h-auto py-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={user.avatar || "/placeholder.svg"}
-                      alt={user.name}
-                    />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start text-left">
-                    <span className="text-sm font-medium">{user.name}</span>
-                    <span className="text-xs text-sidebar-foreground/70">
-                      {roleLabels[role]}
-                    </span>
-                  </div>
-                  <ChevronUp className="ml-auto h-4 w-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-(--radix-dropdown-menu-trigger-width)"
-              >
-                <DropdownMenuLabel>Chuyển vai trò</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {(Object.keys(roleLabels) as UserRole[]).map((r) => (
-                  <DropdownMenuItem
-                    key={r}
-                    onClick={() => onRoleChange(r)}
-                    className={cn(role === r && "bg-accent")}
-                  >
-                    {roleLabels[r]}
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Cài đặt
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={onLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Đăng xuất
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="flex items-center gap-3 px-3 py-3">
+          <Avatar className="h-9 w-9 shrink-0">
+            <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+              {user.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="text-sm font-medium truncate">{user.name}</span>
+            <span className="text-xs text-sidebar-foreground/60 truncate">
+              {roleLabels[role]}
+            </span>
+          </div>
+          <button
+            onClick={onLogout}
+            title="Đăng xuất"
+            className="p-1.5 rounded-md hover:bg-sidebar-accent text-sidebar-foreground/60 hover:text-destructive transition-colors shrink-0"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
 }
+
