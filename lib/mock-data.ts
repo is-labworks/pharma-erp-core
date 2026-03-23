@@ -135,6 +135,13 @@ export const users: User[] = [
     role: "hr_staff",
     department: "Hành chính - Nhân sự",
   },
+  {
+    id: "user-payroll",
+    name: "Nguyễn Kim Phụng",
+    email: "payroll.accountant@pharma.vn",
+    role: "payroll_accountant",
+    department: "Kế toán",
+  },
 ]
 
 export const materials: Material[] = [
@@ -515,6 +522,7 @@ export const roleLabels: Record<string, string> = {
   sales_manager: "Trưởng bộ phận Kinh doanh",
   hr_manager: "Quản lý Nhân sự",
   hr_staff: "Nhân viên Nhân sự",
+  payroll_accountant: "Kế toán Tiền lương",
 }
 
 export const statusLabels: Record<string, string> = {

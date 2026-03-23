@@ -99,7 +99,11 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
           href: "/requester/list",
           icon: ClipboardList,
         },
-        { title: "Xem tồn kho", href: "/requester/inventory", icon: Package },
+        {
+          title: "Xem tồn kho",
+          href: "/requester/inventory",
+          icon: Package,
+        },
       ],
     },
   ],
@@ -228,6 +232,11 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
           href: "/accounting/reports",
           icon: Receipt,
         },
+        {
+          title: "Phê duyệt lương",
+          href: "/payroll/approve",
+          icon: CheckSquare,
+        },
       ],
     },
     {
@@ -266,8 +275,8 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
           icon: PieChart,
         },
         {
-          title: "Tình trạng tồn kho",
-          href: "/director/inventory",
+          title: "Xem tồn kho",
+          href: "/requester/inventory",
           icon: Package,
         },
         {
@@ -470,7 +479,11 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
       label: "Tuyển dụng",
       items: [
         { title: "Yêu cầu tuyển", href: "/hr/recruitment", icon: FileCheck },
-        { title: "Tạo yêu cầu", href: "/hr/recruitment/create", icon: FilePlus },
+        {
+          title: "Tạo yêu cầu",
+          href: "/hr/recruitment/create",
+          icon: FilePlus,
+        },
       ],
     },
     {
@@ -491,6 +504,35 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
       label: "Báo cáo",
       items: [
         { title: "Báo cáo tuyển dụng", href: "/hr/reports", icon: BarChart3 },
+      ],
+    },
+    {
+      label: "Quản lý Tiền lương",
+      items: [
+        { title: "Tổng quan lương", href: "/payroll", icon: LayoutDashboard },
+        {
+          title: "Nhân viên & Lương CB",
+          href: "/payroll/employees",
+          icon: Users,
+        },
+        { title: "Tính lương kỳ này", href: "/payroll/run", icon: Calculator },
+        {
+          title: "Bảng lương & Phiếu lương",
+          href: "/payroll/payslips",
+          icon: FileSpreadsheet,
+        },
+        {
+          title: "Phân bổ quỹ lương",
+          href: "/payroll/fund-allocation",
+          icon: PieChart,
+        },
+        {
+          title: "Báo cáo & Thống kê",
+          href: "/payroll/analytics",
+          icon: BarChart3,
+        },
+        { title: "Kế toán & Thuế", href: "/payroll/accounting", icon: Receipt },
+        { title: "Phê duyệt", href: "/payroll/approve", icon: FileCheck },
       ],
     },
   ],
@@ -517,6 +559,37 @@ const navigationByRole: Record<UserRole, NavGroup[]> = {
       ],
     },
   ],
+  payroll_accountant: [
+    {
+      label: "Tiền lương",
+      items: [
+        { title: "Tổng quan lương", href: "/payroll", icon: LayoutDashboard },
+        {
+          title: "Nhân viên & Lương CB",
+          href: "/payroll/employees",
+          icon: Users,
+        },
+        { title: "Tính lương kỳ này", href: "/payroll/run", icon: Calculator },
+        {
+          title: "Bảng lương & Phiếu lương",
+          href: "/payroll/payslips",
+          icon: FileSpreadsheet,
+        },
+        {
+          title: "Phân bổ quỹ lương",
+          href: "/payroll/fund-allocation",
+          icon: PieChart,
+        },
+        {
+          title: "Báo cáo & Thống kê",
+          href: "/payroll/analytics",
+          icon: BarChart3,
+        },
+        { title: "Kế toán & Thuế", href: "/payroll/accounting", icon: Receipt },
+        { title: "Phê duyệt", href: "/payroll/approve", icon: FileCheck },
+      ],
+    },
+  ],
 };
 
 interface AppSidebarProps {
@@ -529,11 +602,7 @@ interface AppSidebarProps {
   onLogout?: () => void;
 }
 
-export function AppSidebar({
-  role,
-  user,
-  onLogout,
-}: AppSidebarProps) {
+export function AppSidebar({ role, user, onLogout }: AppSidebarProps) {
   const pathname = usePathname();
   const navGroups = navigationByRole[role];
 
@@ -581,7 +650,10 @@ export function AppSidebar({
       <SidebarFooter className="border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-3 py-3">
           <Avatar className="h-9 w-9 shrink-0">
-            <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+            <AvatarImage
+              src={user.avatar || "/placeholder.svg"}
+              alt={user.name}
+            />
             <AvatarFallback className="bg-primary/10 text-primary font-semibold">
               {user.name.charAt(0)}
             </AvatarFallback>
@@ -605,4 +677,3 @@ export function AppSidebar({
     </Sidebar>
   );
 }
-

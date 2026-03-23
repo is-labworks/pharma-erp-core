@@ -37,6 +37,7 @@ export const roleLinks: Record<UserRole, string> = {
   sales_manager: "/sales/dashboard",
   hr_manager: "/hr",
   hr_staff: "/hr/candidates",
+  payroll_accountant: "/payroll",
 };
 
 // In-memory store for registered users (extends mock data at runtime)

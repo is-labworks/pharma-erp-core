@@ -4,6 +4,7 @@ export * from "./maintenance-types";
 export * from "./costing-types";
 export * from "./sales-types";
 export * from "./hr-types";
+export * from "./payroll-types";
 
 
 export type UserRole =
@@ -20,7 +21,8 @@ export type UserRole =
   | "sales_staff" // Nhân viên Kinh doanh
   | "sales_manager" // Trưởng bộ phận Kinh doanh
   | "hr_manager" // Quản lý Nhân sự
-  | "hr_staff"; // Nhân viên Nhân sự
+  | "hr_staff" // Nhân viên Nhân sự
+  | "payroll_accountant"; // Kế toán Tiền lương
 
 export type RequestStatus =
   | "pending" // Chờ duyệt

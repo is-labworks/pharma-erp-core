@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
@@ -18,8 +19,9 @@ const stageLabels: Record<string, string> = {
   offer: "Đang offer", nhan_viec: "Đã nhận việc", loai: "Đã loại",
 };
 
-export default function CandidateDetailPage({ params }: { params: { id: string } }) {
-  const uv = ungVien.find((u) => u.maUngVien === params.id) ?? ungVien[0];
+export default function CandidateDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
+  const uv = ungVien.find((u) => u.maUngVien === id) ?? ungVien[0];
   const lichPV = lichPhongVan.filter((l) => l.maUngVien === uv.maUngVien);
   const phieu = phieuDanhGia.find((p) => p.maUngVien === uv.maUngVien);
   const yeuCau = yeuCauTuyenDung.find((y) => y.maYeuCau === uv.maYeuCau);
